@@ -120,19 +120,25 @@
   <div class="sidebar">
     <h1>Acceleration Hub 🚀🤖</h1>
     
-    <button class="topic-btn active" data-topic="longevity">e/acc & Longevity</button>
-    <button class="topic-btn" data-topic="ai">AI & Robotics</button>
-    <button class="topic-btn" data-topic="sport">Sport (Chelsea & PL)</button>
-    <button class="topic-btn" data-topic="quantum">Quantum Physics</button>
+    <button class="topic-btn active" data-topic="longevity">Longevity</button>
+    <button class="topic-btn" data-topic="ai">AI</button>
+    <button class="topic-btn" data-topic="robotics">Robotics</button>
+    <button class="topic-btn" data-topic="sport">Sport</button>
+    <button class="topic-btn" data-topic="technology">Technology</button>
+    <button class="topic-btn" data-topic="medicine">Medicine</button>
+    <button class="topic-btn" data-topic="nanotechnology">Nanotechnology</button>
+    <button class="topic-btn" data-topic="space">Space Exploration</button>
+    <button class="topic-btn" data-topic="physics">Physics</button>
+    <button class="topic-btn" data-topic="mathematics">Mathematics</button>
 
     <div class="clock" id="clock">CET: --:-- | 2026-03-06</div>
   </div>
 
   <div class="content-wrapper">
     <div class="main">
-      <h2 id="current-topic">Välj ett ämne till vänster</h2>
+      <h2 id="current-topic">Alla ämnen laddar nu...</h2>
       <div id="news-content">
-        <p class="loading">Laddar färska uppdateringar...</p>
+        <p class="loading">Laddar alla ämnen i bakgrunden...</p>
       </div>
     </div>
 
@@ -146,7 +152,7 @@
 
   <script>
     const parser = new RSSParser();
-    const topicCache = {}; // Sparar gammal info så den inte försvinner
+    const topicCache = {};
 
     const feeds = {
       longevity: [
@@ -155,22 +161,100 @@
         'https://www.lifespan.io/feed',
         'https://www.leafscience.org/feed/',
         'https://www.longevitylive.com/feed/',
-        'https://www.science.org/rss/news',
         'https://www.nature.com/subjects/ageing.rss',
+        'https://www.science.org/rss/news',
         'https://www.biogerontologyjournal.com/feed/'
       ],
       ai: [
         'https://www.artificialintelligence-news.com/rss',
+        'https://venturebeat.com/category/ai/feed/',
         'https://techxplore.com/rss-feed/robotics-news/',
         'https://robohub.org/feed/',
-        'https://venturebeat.com/category/ai/feed/',
         'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml',
         'https://arstechnica.com/rss/feeds/2.0/ai.xml',
-        'https://spectrum.ieee.org/rss/robotics/feed',
+        'https://spectrum.ieee.org/feeds/topic/robotics.rss',
         'https://www.wired.com/feed/category/ideas/latest/rss'
       ],
-      sport: ['https://www.football.london/chelsea-fc/?service=rss'],
-      quantum: ['https://phys.org/rss-feed/physics-news/quantum-physics/']
+      robotics: [
+        'https://techxplore.com/rss-feed/robotics-news/',
+        'https://robohub.org/feed/',
+        'https://spectrum.ieee.org/feeds/topic/robotics.rss',
+        'https://www.newatlas.com/rss/robotics/',
+        'https://www.roboticsbusinessreview.com/feed/',
+        'https://www.therobotreport.com/feed/',
+        'https://www.ieee.org/rss/robotics.xml',
+        'https://venturebeat.com/category/ai/feed/'
+      ],
+      sport: [
+        'https://www.football.london/chelsea-fc/?service=rss',
+        'https://www.bbc.co.uk/sport/football/rss.xml',
+        'https://www.skysports.com/chelsea-fc/rss',
+        'https://www.espn.com/soccer/team/_/id/363/chelsea/rss',
+        'https://www.premierleague.com/rss',
+        'https://www.uefa.com/uefachampionsleague/rss',
+        'https://www.bbc.co.uk/sport/football/premier-league/rss',
+        'https://www.skysports.com/premier-league/rss'
+      ],
+      technology: [
+        'https://www.theverge.com/rss/index.xml',
+        'https://www.wired.com/feed/rss',
+        'https://arstechnica.com/rss/',
+        'https://techcrunch.com/feed/',
+        'https://venturebeat.com/feed/',
+        'https://www.engadget.com/rss.xml',
+        'https://www.cnet.com/rss/',
+        'https://www.zdnet.com/topic/artificial-intelligence/rss.xml'
+      ],
+      medicine: [
+        'https://www.nature.com/subjects/medicine.rss',
+        'https://www.science.org/rss/news',
+        'https://www.medicalnewstoday.com/rss',
+        'https://www.nih.gov/news-events/rss',
+        'https://www.thelancet.com/rssfeed',
+        'https://www.bmj.com/rss',
+        'https://jamanetwork.com/rss',
+        'https://www.newscientist.com/topic/medicine/feed/'
+      ],
+      nanotechnology: [
+        'https://phys.org/rss-feed/nanotech-news/',
+        'https://www.nature.com/subjects/nanotechnology.rss',
+        'https://spectrum.ieee.org/rss/nanotechnology',
+        'https://www.nanowerk.com/rss/nanotechnology-news.rss',
+        'https://www.sciencedaily.com/rss/matter_energy/nanotechnology.xml',
+        'https://www.acs.org/content/acs/en/pressroom/rss.html',
+        'https://www.azonano.com/rss.aspx',
+        'https://www.nano.gov/rss'
+      ],
+      space: [
+        'https://www.nasa.gov/rss/dyn/breaking_news.rss',
+        'https://www.space.com/feeds/all',
+        'https://www.universetoday.com/feed/',
+        'https://www.esa.int/rss',
+        'https://spacenews.com/feed/',
+        'https://www.skyandtelescope.org/feed/',
+        'https://www.jpl.nasa.gov/rss',
+        'https://www.spacex.com/rss'
+      ],
+      physics: [
+        'https://phys.org/rss-feed/physics-news/',
+        'https://www.nature.com/subjects/physics.rss',
+        'https://arxiv.org/rss/physics',
+        'https://www.science.org/rss/news',
+        'https://www.newscientist.com/topic/physics/feed/',
+        'https://www.quantamagazine.org/feed/',
+        'https://www.aps.org/rss',
+        'https://www.cern.ch/rss'
+      ],
+      mathematics: [
+        'https://www.ams.org/rss',
+        'https://arxiv.org/rss/math',
+        'https://www.quantamagazine.org/tag/mathematics/feed/',
+        'https://www.maths.cam.ac.uk/rss',
+        'https://www.newscientist.com/topic/mathematics/feed/',
+        'https://www.nature.com/subjects/mathematics.rss',
+        'https://math.stackexchange.com/feeds',
+        'https://www.mathunion.org/rss'
+      ]
     };
 
     function timeAgo(dateStr) {
@@ -228,9 +312,8 @@
         }
         allItems.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-        // Lägg till i cache (så gammal info stannar)
         if (!topicCache[topic]) topicCache[topic] = [];
-        topicCache[topic] = [...allItems, ...topicCache[topic]].slice(0, 30); // max 30 poster
+        topicCache[topic] = [...allItems, ...topicCache[topic]].slice(0, 30);
 
         let html = '';
         topicCache[topic].forEach(item => {
@@ -244,10 +327,20 @@
               <p class="snippet">${snippet}</p>
             </div>`;
         });
-        targetElement.innerHTML = html;
+        targetElement.innerHTML = html || '<p class="loading">Inga nyheter – refresh!</p>';
       } catch (e) {
         targetElement.innerHTML = '<p class="error">Laddning misslyckades – prova refresh!</p>';
       }
+    }
+
+    async function loadAllTopics() {
+      const content = document.getElementById('news-content');
+      content.innerHTML = '<p class="loading">Laddar alla ämnen i bakgrunden...</p>';
+
+      for (let topic of Object.keys(feeds)) {
+        loadRSS(topic, document.createElement('div')); // ladda i bakgrunden
+      }
+      loadTopic('longevity'); // visa första
     }
 
     function loadTopic(topic) {
@@ -255,7 +348,6 @@
       const title = document.getElementById('current-topic');
       title.textContent = topic.charAt(0).toUpperCase() + topic.slice(1);
 
-      // Visa cached innehåll direkt
       if (topicCache[topic] && topicCache[topic].length > 0) {
         let html = '';
         topicCache[topic].forEach(item => {
@@ -274,7 +366,6 @@
         content.innerHTML = '<p class="loading">Laddar...</p>';
       }
 
-      // Hämta nya + lägg till
       loadRSS(topic, content);
     }
 
@@ -292,8 +383,8 @@
       loadTopic(active);
     }, 300000);
 
-    // Start med Longevity
-    loadTopic('longevity');
+    // Starta ALLA ämnen automatiskt
+    loadAllTopics();
   </script>
 </body>
 </html>
