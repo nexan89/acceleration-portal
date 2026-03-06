@@ -7,60 +7,65 @@
   <script src="https://unpkg.com/rss-parser@3.13.0/dist/rss-parser.min.js"></script>
   <style>
     body { 
-      background: linear-gradient(135deg, #0a0a0a, #0f0f1a); color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; 
+      background: linear-gradient(135deg, #0a0a0a, #0f0f1a, #1a0033); color: #e0e0ff; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; 
       display: flex; height: 100vh; overflow: hidden;
     }
     .sidebar {
-      width: 280px; background: linear-gradient(to bottom, #111122, #0a0a1a); padding: 30px 20px 100px; border-right: 1px solid #1a1a2e; overflow-y: auto;
-      box-shadow: 5px 0 20px rgba(0,0,0,0.7); position: relative;
+      width: 280px; background: linear-gradient(to bottom, #111122, #0a0a1a, #1a0033); padding: 30px 20px 120px; border-right: 1px solid #2a2a4a; overflow-y: auto;
+      box-shadow: 5px 0 25px rgba(0,0,0,0.8); position: relative;
     }
     .sidebar h1 {
-      color: #60a5fa; text-align: center; margin-bottom: 40px; font-size: 1.7em; letter-spacing: 1.5px; text-shadow: 0 0 12px rgba(96,165,250,0.4);
+      color: #7c3aed; text-align: center; margin-bottom: 40px; font-size: 1.8em; letter-spacing: 2px; text-shadow: 0 0 15px rgba(124,58,237,0.5);
     }
     .topic-btn {
       display: block; width: 100%; padding: 16px 20px; margin: 12px 0; background: #1a1a2e; border: none;
-      border-radius: 14px; color: #d0d0ff; font-size: 1.08em; cursor: pointer; text-align: left;
-      transition: all 0.35s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      border-radius: 16px; color: #d0d0ff; font-size: 1.1em; cursor: pointer; text-align: left;
+      transition: all 0.4s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.6);
     }
     .topic-btn:hover, .topic-btn.active {
-      background: linear-gradient(90deg, #1e3a8a, #3b82f6); color: white; box-shadow: 0 0 30px rgba(59,130,246,0.6); transform: translateX(10px) scale(1.03);
+      background: linear-gradient(90deg, #4c1d95, #7c3aed, #a78bfa); color: white; box-shadow: 0 0 35px rgba(124,58,237,0.7); transform: translateX(12px) scale(1.04);
     }
     .clock {
-      position: absolute; bottom: 20px; left: 20px; right: 20px; text-align: center; font-size: 1.1em; color: #a5b4fc;
-      background: #1a1a2e88; padding: 10px; border-radius: 12px; backdrop-filter: blur(5px);
+      position: absolute; bottom: 20px; left: 20px; right: 20px; text-align: center; font-size: 1.15em; color: #c4b5fd;
+      background: #1a1a2e99; padding: 12px; border-radius: 14px; backdrop-filter: blur(8px); box-shadow: 0 0 20px rgba(124,58,237,0.3);
     }
     .content-wrapper {
       flex: 1; display: flex; overflow: hidden;
     }
     .main {
-      flex: 2; padding: 40px 30px; overflow-y: auto; background: #0a0a0a; border-right: 1px solid #1a1a2e;
+      flex: 3; padding: 40px 40px; overflow-y: auto; background: #0a0a0a;
     }
     .main h2 { 
-      color: #60a5fa; margin-bottom: 35px; font-size: 2.2em; text-shadow: 0 0 18px rgba(96,165,250,0.25);
+      color: #a78bfa; margin-bottom: 40px; font-size: 2.4em; text-shadow: 0 0 20px rgba(167,139,250,0.3);
     }
     .right-sidebar {
-      flex: 1; padding: 40px 30px; overflow-y: auto; background: #0b0b15;
+      flex: 1.2; padding: 40px 30px; overflow-y: auto; background: linear-gradient(to bottom, #0b0b15, #1a0033);
+      border-left: 1px solid #2a2a4a;
     }
     .right-sidebar h3 {
-      color: #93c5fd; margin-bottom: 20px; font-size: 1.4em;
+      color: #c4b5fd; margin-bottom: 25px; font-size: 1.5em; text-shadow: 0 0 10px rgba(196,181,253,0.4);
     }
-    .right-card {
-      background: #1e1e2e; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3b82f6;
+    .highlight-card {
+      background: #1e1e2e; padding: 16px; border-radius: 14px; margin-bottom: 18px; border-left: 5px solid #7c3aed;
+      transition: all 0.3s; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+    .highlight-card:hover {
+      transform: translateY(-5px); box-shadow: 0 10px 30px rgba(124,58,237,0.4);
     }
     .card {
-      background: linear-gradient(145deg, #1e1e2e, #141422); padding: 22px; border-radius: 18px; border-left: 6px solid #3b82f6;
-      transition: all 0.35s ease; max-width: 900px; width: fit-content; box-shadow: 0 8px 25px rgba(0,0,0,0.6); margin-bottom: 20px;
+      background: linear-gradient(145deg, #1e1e2e, #141422, #1a0033); padding: 24px; border-radius: 20px; border-left: 7px solid #7c3aed;
+      transition: all 0.4s ease; max-width: 950px; width: fit-content; box-shadow: 0 10px 30px rgba(0,0,0,0.7); margin-bottom: 25px;
     }
     .card:hover {
-      transform: translateY(-10px); box-shadow: 0 15px 35px rgba(59,130,246,0.4); border-left-color: #60a5fa;
+      transform: translateY(-12px); box-shadow: 0 20px 40px rgba(124,58,237,0.5); border-left-color: #a78bfa;
     }
     .card a { 
-      color: #93c5fd; text-decoration: none; font-weight: 600; font-size: 1.25em; display: block; margin-bottom: 10px;
+      color: #c4b5fd; text-decoration: none; font-weight: 700; font-size: 1.3em; display: block; margin-bottom: 12px;
     }
-    .card a:hover { color: #dbeafe; text-decoration: underline; }
-    .meta { color: #a5b4fc; font-size: 0.95em; margin: 8px 0; display: block; }
-    .snippet { color: #c7d2fe; line-height: 1.6; font-size: 1.05em; }
-    .loading, .error { color: #a0a0ff; font-style: italic; padding: 30px; font-size: 1.1em; }
+    .card a:hover { color: #e0d7ff; text-decoration: underline; }
+    .meta { color: #c4b5fd; font-size: 1em; margin: 10px 0; display: block; }
+    .snippet { color: #d1d5ff; line-height: 1.65; font-size: 1.08em; }
+    .loading, .error { color: #c4b5fd; font-style: italic; padding: 40px; font-size: 1.2em; }
     .error { color: #fca5a5; }
   </style>
 </head>
@@ -73,21 +78,21 @@
     <button class="topic-btn" data-topic="sport">Sport (Chelsea & PL)</button>
     <button class="topic-btn" data-topic="quantum">Quantum Physics</button>
 
-    <div class="clock" id="clock">CET: --:-- | Datum: ----</div>
+    <div class="clock" id="clock">CET: --:-- | Din tid: --:--</div>
   </div>
 
   <div class="content-wrapper">
     <div class="main">
       <h2 id="current-topic">Välj ett ämne till vänster</h2>
       <div id="news-content">
-        <p class="loading">Laddar färska uppdateringar... (refresh om det behövs)</p>
+        <p class="loading">Laddar färska uppdateringar...</p>
       </div>
     </div>
 
     <div class="right-sidebar">
-      <h3>Senaste highlights</h3>
+      <h3>Senaste highlights (från alla)</h3>
       <div id="highlights">
-        <p class="loading">Laddar snabba uppdateringar...</p>
+        <p class="loading">Samlar snabba uppdateringar...</p>
       </div>
     </div>
   </div>
@@ -118,12 +123,13 @@
 
     function updateClock() {
       const now = new Date();
-      const cetOffset = 1 * 60; // CET UTC+1 (justera för DST om behövs)
-      const cetTime = new Date(now.getTime() + cetOffset * 60000);
-      const hours = cetTime.getUTCHours().toString().padStart(2, '0');
-      const mins = cetTime.getUTCMinutes().toString().padStart(2, '0');
-      const dateStr = cetTime.toLocaleDateString('sv-SE');
-      document.getElementById('clock').innerHTML = `CET: ${hours}:${mins} | Datum: ${dateStr}`;
+      const cet = new Date(now.getTime() + 60*60*1000); // CET UTC+1 (ignorera DST för enkelhet)
+      const hours = cet.getUTCHours().toString().padStart(2, '0');
+      const mins = cet.getUTCMinutes().toString().padStart(2, '0');
+      const dateStr = cet.toLocaleDateString('sv-SE');
+      const localHours = now.getHours().toString().padStart(2, '0');
+      const localMins = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('clock').innerHTML = `CET: ${hours}:${mins} | Din tid: ${localHours}:${localMins}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -157,7 +163,7 @@
         feed.items.slice(0, 8).forEach(item => {
           const pubDate = item.pubDate ? new Date(item.pubDate).toLocaleDateString('sv-SE') : 'Okänt datum';
           const ago = timeAgo(item.pubDate);
-          const snippet = (item.contentSnippet || item.description || '').substring(0, 200) + (item.contentSnippet?.length > 200 ? '...' : '');
+          const snippet = (item.contentSnippet || item.description || '').substring(0, 220) + (item.contentSnippet?.length > 220 ? '...' : '');
           html += `
             <div class="card">
               <a href="${item.link}" target="_blank">${item.title}</a>
@@ -171,6 +177,30 @@
       }
     }
 
+    function loadHighlights() {
+      const highlights = document.getElementById('highlights');
+      highlights.innerHTML = '<p class="loading">Samlar...</p>';
+      let allItems = [];
+      Object.keys(feeds).forEach(key => {
+        fetchWithFallback(feeds[key]).then(res => res.text()).then(text => {
+          parser.parseString(text).items.slice(0, 3).forEach(item => {
+            allItems.push({ ...item, source: key });
+          });
+          allItems.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+          let html = '';
+          allItems.slice(0, 5).forEach(item => {
+            const ago = timeAgo(item.pubDate);
+            html += `
+              <div class="highlight-card">
+                <a href="${item.link}" target="_blank">${item.title}</a>
+                <span class="meta">[${item.source}] (${ago})</span>
+              </div>`;
+          });
+          highlights.innerHTML = html || '<p>Inga highlights än.</p>';
+        }).catch(() => {});
+      });
+    }
+
     function loadTopic(topic) {
       const content = document.getElementById('news-content');
       const title = document.getElementById('current-topic');
@@ -181,7 +211,7 @@
         content.innerHTML = '';
         Object.keys(feeds).forEach(key => {
           const section = document.createElement('div');
-          section.innerHTML = `<h3 style="color:#a0a0ff; margin:40px 0 20px; font-size:1.5em;">${key.charAt(0).toUpperCase() + key.slice(1)}</h3><div id="${key}-sub"></div>`;
+          section.innerHTML = `<h3 style="color:#c4b5fd; margin:45px 0 25px; font-size:1.6em;">${key.charAt(0).toUpperCase() + key.slice(1)}</h3><div id="${key}-sub"></div>`;
           content.appendChild(section);
           loadRSS(feeds[key], document.getElementById(`${key}-sub`));
         });
@@ -199,7 +229,14 @@
       });
     });
 
+    // Auto-refresh feeds var 10 min
+    setInterval(() => {
+      loadTopic(document.querySelector('.topic-btn.active').dataset.topic);
+      loadHighlights();
+    }, 600000);
+
     loadTopic('all');
+    loadHighlights();
   </script>
 </body>
 </html>
