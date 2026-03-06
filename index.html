@@ -10,11 +10,8 @@
       background: linear-gradient(135deg, #0a0a0a, #0f0f1a, #1a0033); 
       color: #e0e0ff; 
       font-family: 'Segoe UI', system-ui, sans-serif; 
-      margin: 0; 
-      padding: 0; 
-      display: flex; 
-      height: 100vh; 
-      overflow: hidden;
+      margin: 0; padding: 0; 
+      display: flex; height: 100vh; overflow: hidden;
     }
     .sidebar { 
       width: 280px; 
@@ -128,7 +125,7 @@
     <button class="topic-btn" data-topic="sport">Sport (Chelsea & PL)</button>
     <button class="topic-btn" data-topic="quantum">Quantum Physics</button>
 
-    <div class="clock" id="clock">CET: --:-- | Din tid: --:--</div>
+    <div class="clock" id="clock">CET: --:-- | 2026-03-06</div>
   </div>
 
   <div class="content-wrapper">
@@ -149,17 +146,28 @@
 
   <script>
     const parser = new RSSParser();
+    const topicCache = {}; // Sparar gammal info så den inte försvinner
 
     const feeds = {
       longevity: [
         'https://longevity.technology/feed/',
         'https://www.fightaging.org/feed',
-        'https://www.lifespan.io/feed'
+        'https://www.lifespan.io/feed',
+        'https://www.leafscience.org/feed/',
+        'https://www.longevitylive.com/feed/',
+        'https://www.science.org/rss/news',
+        'https://www.nature.com/subjects/ageing.rss',
+        'https://www.biogerontologyjournal.com/feed/'
       ],
       ai: [
         'https://www.artificialintelligence-news.com/rss',
         'https://techxplore.com/rss-feed/robotics-news/',
-        'https://robohub.org/feed/'
+        'https://robohub.org/feed/',
+        'https://venturebeat.com/category/ai/feed/',
+        'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml',
+        'https://arstechnica.com/rss/feeds/2.0/ai.xml',
+        'https://spectrum.ieee.org/rss/robotics/feed',
+        'https://www.wired.com/feed/category/ideas/latest/rss'
       ],
       sport: ['https://www.football.london/chelsea-fc/?service=rss'],
       quantum: ['https://phys.org/rss-feed/physics-news/quantum-physics/']
@@ -173,7 +181,6 @@
       const diffMin = Math.floor(diffMs / 60000);
       const diffHr = Math.floor(diffMin / 60);
       const diffDay = Math.floor(diffHr / 24);
-
       if (diffDay > 0) return `för ${diffDay} dag${diffDay > 1 ? 'ar' : ''} sedan`;
       if (diffHr > 0) return `för ${diffHr} tim${diffHr > 1 ? 'mar' : ''} sedan`;
       if (diffMin > 0) return `för ${diffMin} min${diffMin > 1 ? 'uter' : ''} sedan`;
@@ -185,9 +192,8 @@
       const cet = new Date(now.getTime() + 60*60*1000);
       const hours = cet.getUTCHours().toString().padStart(2, '0');
       const mins = cet.getUTCMinutes().toString().padStart(2, '0');
-      const localHours = now.getHours().toString().padStart(2, '0');
-      const localMins = now.getMinutes().toString().padStart(2, '0');
-      document.getElementById('clock').innerHTML = `CET: ${hours}:${mins} | Din tid: ${localHours}:${localMins}`;
+      const dateStr = cet.toLocaleDateString('sv-SE');
+      document.getElementById('clock').innerHTML = `CET: ${hours}:${mins} | ${dateStr}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -221,8 +227,13 @@
           feed.items.forEach(item => allItems.push(item));
         }
         allItems.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+        // Lägg till i cache (så gammal info stannar)
+        if (!topicCache[topic]) topicCache[topic] = [];
+        topicCache[topic] = [...allItems, ...topicCache[topic]].slice(0, 30); // max 30 poster
+
         let html = '';
-        allItems.slice(0, 10).forEach(item => {
+        topicCache[topic].forEach(item => {
           const pubDate = new Date(item.pubDate).toLocaleDateString('sv-SE');
           const ago = timeAgo(item.pubDate);
           const snippet = (item.contentSnippet || item.description || '').substring(0, 220) + '...';
@@ -233,7 +244,7 @@
               <p class="snippet">${snippet}</p>
             </div>`;
         });
-        targetElement.innerHTML = html || '<p class="loading">Inga nyheter – refresh!</p>';
+        targetElement.innerHTML = html;
       } catch (e) {
         targetElement.innerHTML = '<p class="error">Laddning misslyckades – prova refresh!</p>';
       }
@@ -242,8 +253,28 @@
     function loadTopic(topic) {
       const content = document.getElementById('news-content');
       const title = document.getElementById('current-topic');
-      content.innerHTML = '<p class="loading">Laddar...</p>';
       title.textContent = topic.charAt(0).toUpperCase() + topic.slice(1);
+
+      // Visa cached innehåll direkt
+      if (topicCache[topic] && topicCache[topic].length > 0) {
+        let html = '';
+        topicCache[topic].forEach(item => {
+          const pubDate = new Date(item.pubDate).toLocaleDateString('sv-SE');
+          const ago = timeAgo(item.pubDate);
+          const snippet = (item.contentSnippet || item.description || '').substring(0, 220) + '...';
+          html += `
+            <div class="card">
+              <a href="${item.link}" target="_blank">${item.title}</a>
+              <span class="meta">Publicerad: ${pubDate} (${ago})</span>
+              <p class="snippet">${snippet}</p>
+            </div>`;
+        });
+        content.innerHTML = html;
+      } else {
+        content.innerHTML = '<p class="loading">Laddar...</p>';
+      }
+
+      // Hämta nya + lägg till
       loadRSS(topic, content);
     }
 
