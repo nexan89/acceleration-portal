@@ -11,8 +11,8 @@
       display: flex; height: 100vh; overflow: hidden;
     }
     .sidebar {
-      width: 280px; background: linear-gradient(to bottom, #111122, #0a0a1a); padding: 30px 20px; border-right: 1px solid #1a1a2e; overflow-y: auto;
-      box-shadow: 5px 0 20px rgba(0,0,0,0.7);
+      width: 280px; background: linear-gradient(to bottom, #111122, #0a0a1a); padding: 30px 20px 100px; border-right: 1px solid #1a1a2e; overflow-y: auto;
+      box-shadow: 5px 0 20px rgba(0,0,0,0.7); position: relative;
     }
     .sidebar h1 {
       color: #60a5fa; text-align: center; margin-bottom: 40px; font-size: 1.7em; letter-spacing: 1.5px; text-shadow: 0 0 12px rgba(96,165,250,0.4);
@@ -25,11 +25,27 @@
     .topic-btn:hover, .topic-btn.active {
       background: linear-gradient(90deg, #1e3a8a, #3b82f6); color: white; box-shadow: 0 0 30px rgba(59,130,246,0.6); transform: translateX(10px) scale(1.03);
     }
+    .clock {
+      position: absolute; bottom: 20px; left: 20px; right: 20px; text-align: center; font-size: 1.1em; color: #a5b4fc;
+      background: #1a1a2e88; padding: 10px; border-radius: 12px; backdrop-filter: blur(5px);
+    }
+    .content-wrapper {
+      flex: 1; display: flex; overflow: hidden;
+    }
     .main {
-      flex: 1; padding: 40px 50px; overflow-y: auto; background: #0a0a0a;
+      flex: 2; padding: 40px 30px; overflow-y: auto; background: #0a0a0a; border-right: 1px solid #1a1a2e;
     }
     .main h2 { 
       color: #60a5fa; margin-bottom: 35px; font-size: 2.2em; text-shadow: 0 0 18px rgba(96,165,250,0.25);
+    }
+    .right-sidebar {
+      flex: 1; padding: 40px 30px; overflow-y: auto; background: #0b0b15;
+    }
+    .right-sidebar h3 {
+      color: #93c5fd; margin-bottom: 20px; font-size: 1.4em;
+    }
+    .right-card {
+      background: #1e1e2e; padding: 15px; border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #3b82f6;
     }
     .card {
       background: linear-gradient(145deg, #1e1e2e, #141422); padding: 22px; border-radius: 18px; border-left: 6px solid #3b82f6;
@@ -56,12 +72,23 @@
     <button class="topic-btn" data-topic="ai">AI & Robotics</button>
     <button class="topic-btn" data-topic="sport">Sport (Chelsea & PL)</button>
     <button class="topic-btn" data-topic="quantum">Quantum Physics</button>
+
+    <div class="clock" id="clock">CET: --:-- | Datum: ----</div>
   </div>
 
-  <div class="main">
-    <h2 id="current-topic">Välj ett ämne till vänster</h2>
-    <div id="news-content">
-      <p class="loading">Laddar färska uppdateringar... (refresh om det behövs)</p>
+  <div class="content-wrapper">
+    <div class="main">
+      <h2 id="current-topic">Välj ett ämne till vänster</h2>
+      <div id="news-content">
+        <p class="loading">Laddar färska uppdateringar... (refresh om det behövs)</p>
+      </div>
+    </div>
+
+    <div class="right-sidebar">
+      <h3>Senaste highlights</h3>
+      <div id="highlights">
+        <p class="loading">Laddar snabba uppdateringar...</p>
+      </div>
     </div>
   </div>
 
@@ -89,18 +116,30 @@
       return 'precis nu';
     }
 
+    function updateClock() {
+      const now = new Date();
+      const cetOffset = 1 * 60; // CET UTC+1 (justera för DST om behövs)
+      const cetTime = new Date(now.getTime() + cetOffset * 60000);
+      const hours = cetTime.getUTCHours().toString().padStart(2, '0');
+      const mins = cetTime.getUTCMinutes().toString().padStart(2, '0');
+      const dateStr = cetTime.toLocaleDateString('sv-SE');
+      document.getElementById('clock').innerHTML = `CET: ${hours}:${mins} | Datum: ${dateStr}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
     async function fetchWithFallback(url) {
       const proxies = [
         'https://api.allorigins.win/raw?url=',
         'https://corsproxy.io/?',
         'https://test.cors.workers.dev/?',
         'https://codetabs.com/cors-proxy/cors-proxy.php?url=',
-        'https://cors.bridged.cc/'  // Extra från 2026-listor
+        'https://cors.bridged.cc/'
       ];
       for (let proxy of proxies) {
         try {
           let fullUrl = proxy + encodeURIComponent(url);
-          if (proxy.includes('bridged')) fullUrl = proxy + url; // Vissa proxies behöver annan format
+          if (proxy.includes('bridged')) fullUrl = proxy + url;
           const res = await fetch(fullUrl, { signal: AbortSignal.timeout(15000) });
           if (res.ok) return res;
         } catch {}
@@ -128,7 +167,7 @@
         });
         targetElement.innerHTML = html || '<p class="loading">Inga nyheter – refresh!</p>';
       } catch (e) {
-        targetElement.innerHTML = '<p class="error">Laddning misslyckades (feed/proxy-issue) – prova refresh!</p>';
+        targetElement.innerHTML = '<p class="error">Laddning misslyckades – prova refresh!</p>';
       }
     }
 
