@@ -7,48 +7,48 @@
   <script src="https://unpkg.com/rss-parser@3.13.0/dist/rss-parser.min.js"></script>
   <style>
     body { 
-      background: linear-gradient(135deg, #0a0a0a, #0f0f1a); color: #e0e0e0; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; 
+      background: linear-gradient(135deg, #0a0a0a, #0f0f1a); color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; 
       display: flex; height: 100vh; overflow: hidden;
     }
     .sidebar {
       width: 280px; background: linear-gradient(to bottom, #111122, #0a0a1a); padding: 30px 20px; border-right: 1px solid #1a1a2e; overflow-y: auto;
-      box-shadow: 5px 0 15px rgba(0,0,0,0.6);
+      box-shadow: 5px 0 20px rgba(0,0,0,0.7);
     }
     .sidebar h1 {
-      color: #00d4ff; text-align: center; margin-bottom: 40px; font-size: 1.6em; letter-spacing: 1px; text-shadow: 0 0 10px rgba(0,212,255,0.3);
+      color: #60a5fa; text-align: center; margin-bottom: 40px; font-size: 1.7em; letter-spacing: 1.5px; text-shadow: 0 0 12px rgba(96,165,250,0.4);
     }
     .topic-btn {
       display: block; width: 100%; padding: 16px 20px; margin: 12px 0; background: #1a1a2e; border: none;
-      border-radius: 12px; color: #d0d0ff; font-size: 1.05em; cursor: pointer; text-align: left;
-      transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      border-radius: 14px; color: #d0d0ff; font-size: 1.08em; cursor: pointer; text-align: left;
+      transition: all 0.35s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
     .topic-btn:hover, .topic-btn.active {
-      background: linear-gradient(90deg, #1e3a8a, #3b82f6); color: white; box-shadow: 0 0 25px rgba(59,130,246,0.5); transform: translateX(8px) scale(1.02);
+      background: linear-gradient(90deg, #1e3a8a, #3b82f6); color: white; box-shadow: 0 0 30px rgba(59,130,246,0.6); transform: translateX(10px) scale(1.03);
     }
     .main {
-      flex: 1; padding: 40px; overflow-y: auto; background: #0a0a0a;
+      flex: 1; padding: 40px 50px; overflow-y: auto; background: #0a0a0a;
     }
     .main h2 { 
-      color: #00d4ff; margin-bottom: 30px; font-size: 2em; text-shadow: 0 0 15px rgba(0,212,255,0.2);
+      color: #60a5fa; margin-bottom: 35px; font-size: 2.2em; text-shadow: 0 0 18px rgba(96,165,250,0.25);
     }
     .card-container {
-      display: flex; flex-direction: column; gap: 20px;
+      display: flex; flex-direction: column; gap: 24px;
     }
     .card {
-      background: #1e1e2e; padding: 20px; border-radius: 16px; border-left: 6px solid #3b82f6;
-      transition: all 0.3s ease; max-width: 800px; width: fit-content; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      background: linear-gradient(145deg, #1e1e2e, #141422); padding: 22px; border-radius: 18px; border-left: 6px solid #3b82f6;
+      transition: all 0.35s ease; max-width: 900px; width: fit-content; box-shadow: 0 8px 25px rgba(0,0,0,0.6);
     }
     .card:hover {
-      transform: translateY(-8px); box-shadow: 0 12px 30px rgba(59,130,246,0.3); border-left-color: #60a5fa;
+      transform: translateY(-10px); box-shadow: 0 15px 35px rgba(59,130,246,0.4); border-left-color: #60a5fa;
     }
     .card a { 
-      color: #60a5fa; text-decoration: none; font-weight: 600; font-size: 1.2em; display: block; margin-bottom: 8px;
+      color: #93c5fd; text-decoration: none; font-weight: 600; font-size: 1.25em; display: block; margin-bottom: 10px;
     }
-    .card a:hover { text-decoration: underline; color: #93c5fd; }
-    .date { color: #a0a0ff; font-size: 0.9em; margin: 6px 0; }
-    .snippet { color: #c0c0ff; line-height: 1.5; }
-    .loading, .error { color: #8888ff; font-style: italic; padding: 20px; }
-    .error { color: #ff6b6b; }
+    .card a:hover { color: #dbeafe; text-decoration: underline; }
+    .date { color: #a5b4fc; font-size: 0.95em; margin: 8px 0; }
+    .snippet { color: #c7d2fe; line-height: 1.6; font-size: 1.05em; }
+    .loading, .error { color: #a0a0ff; font-style: italic; padding: 30px; font-size: 1.1em; }
+    .error { color: #fca5a5; }
   </style>
 </head>
 <body>
@@ -64,7 +64,7 @@
   <div class="main">
     <h2 id="current-topic">Välj ett ämne till vänster</h2>
     <div id="news-content">
-      <p class="loading">Laddar färska nyheter... (refresh om det hänger)</p>
+      <p class="loading">Laddar färska uppdateringar... (refresh om det behövs)</p>
     </div>
   </div>
 
@@ -72,7 +72,7 @@
     const parser = new RSSParser();
     const feeds = {
       longevity: 'https://longevity.technology/feed/',
-      ai: 'https://www.unite.ai/feed/',
+      ai: 'https://www.artificialintelligence-news.com/rss',  // Ny stabil AI-feed istället för unite.ai
       sport: 'https://www.football.london/chelsea-fc/?service=rss',
       quantum: 'https://phys.org/rss-feed/physics-news/quantum-physics/'
     };
@@ -81,35 +81,29 @@
       const proxies = [
         'https://api.allorigins.win/raw?url=',
         'https://corsproxy.io/?',
-        'https://rss2json.com/api.json?url='  // Extra fallback
+        'https://test.cors.workers.dev/?',  // Cloudflare-test, ofta bra
+        'https://corsproxy.io/?'  // Dubbel för säkerhet
       ];
       for (let proxy of proxies) {
         try {
-          const fullUrl = proxy.includes('rss2json') ? proxy + encodeURIComponent(url) : proxy + encodeURIComponent(url);
-          const res = await fetch(fullUrl, { signal: AbortSignal.timeout(8000) });
+          const fullUrl = proxy + encodeURIComponent(url);
+          const res = await fetch(fullUrl, { signal: AbortSignal.timeout(10000) });
           if (res.ok) return res;
-        } catch {}
+        } catch (err) {}
       }
-      throw new Error('Alla proxies misslyckades');
+      throw new Error('Ingen proxy funkade');
     }
 
     async function loadRSS(url, targetElement) {
       try {
         const res = await fetchWithFallback(url);
-        let text;
-        if (url.includes('rss2json')) {
-          const data = await res.json();
-          if (data.status !== 'ok') throw new Error();
-          text = new XMLSerializer().serializeToString(new DOMParser().parseFromString('<rss>' + data.items.map(i => `<item><title>${i.title}</title><link>${i.link}</link><pubDate>${i.pubDate}</pubDate><description>${i.description || i.content}</description></item>`).join('') + '</rss>', 'text/xml'));
-        } else {
-          text = await res.text();
-        }
+        const text = await res.text();
         const feed = await parser.parseString(text);
 
         let html = '';
         feed.items.slice(0, 8).forEach(item => {
           const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('sv-SE') : '';
-          const snippet = (item.contentSnippet || item.description || '').substring(0, 180) + (item.contentSnippet?.length > 180 ? '...' : '');
+          const snippet = (item.contentSnippet || item.description || '').substring(0, 200) + (item.contentSnippet?.length > 200 ? '...' : '');
           html += `
             <div class="card">
               <a href="${item.link}" target="_blank">${item.title}</a>
@@ -117,9 +111,9 @@
               <p class="snippet">${snippet}</p>
             </div>`;
         });
-        targetElement.innerHTML = html || '<p class="loading">Inga nyheter – refresh!</p>';
+        targetElement.innerHTML = html || '<p class="loading">Inga nyheter – refresh sidan!</p>';
       } catch (e) {
-        targetElement.innerHTML = '<p class="error">Laddning misslyckades (feed/proxy-issue) – prova refresh!</p>';
+        targetElement.innerHTML = '<p class="error">Feed laddades inte (vanligt med vissa sajter) – prova refresh eller byt ämne!</p>';
       }
     }
 
@@ -129,11 +123,11 @@
       content.innerHTML = '<p class="loading">Laddar...</p>';
 
       if (topic === 'all') {
-        title.textContent = 'Alla ämnen – Senaste uppdateringar';
+        title.textContent = 'Alla ämnen – Senaste nyheter';
         content.innerHTML = '';
         Object.keys(feeds).forEach(key => {
           const section = document.createElement('div');
-          section.innerHTML = `<h3 style="color:#a0a0ff; margin:30px 0 15px;">${key.charAt(0).toUpperCase() + key.slice(1)}</h3><div id="${key}-sub"></div>`;
+          section.innerHTML = `<h3 style="color:#a0a0ff; margin:40px 0 20px; font-size:1.5em;">${key.charAt(0).toUpperCase() + key.slice(1)}</h3><div id="${key}-sub"></div>`;
           content.appendChild(section);
           loadRSS(feeds[key], document.getElementById(`${key}-sub`));
         });
@@ -151,7 +145,6 @@
       });
     });
 
-    // Start med alla
     loadTopic('all');
   </script>
 </body>
