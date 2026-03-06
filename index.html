@@ -5,64 +5,162 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Timmo's Acceleration Hub</title>
   <script src="https://unpkg.com/rss-parser@3.13.0/dist/rss-parser.min.js"></script>
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   <style>
-    body { background: linear-gradient(135deg, #0a0a0a, #0f0f1a, #1a0033); color: #e0e0ff; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; }
-    .sidebar { width: 280px; background: linear-gradient(to bottom, #111122, #0a0a1a, #1a0033); padding: 30px 20px 120px; border-right: 1px solid #2a2a4a; overflow-y: auto; box-shadow: 5px 0 25px rgba(0,0,0,0.8); position: relative; }
-    .sidebar h1 { color: #a78bfa; text-align: center; margin-bottom: 40px; font-size: 1.8em; text-shadow: 0 0 20px #a78bfa; }
-    .topic-btn { display: block; width: 100%; padding: 16px 20px; margin: 12px 0; background: #1a1a2e; border: none; border-radius: 16px; color: #d0d0ff; font-size: 1.1em; cursor: pointer; text-align: left; transition: all 0.4s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
-    .topic-btn:hover, .topic-btn.active { transform: translateX(12px) scale(1.04); box-shadow: 0 0 35px rgba(167,139,250,0.7); }
-    .longevity-btn:hover, .longevity-btn.active { background: linear-gradient(90deg, #00d4ff, #00ffaa); color: #000; }
-    .ai-btn:hover, .ai-btn.active { background: linear-gradient(90deg, #a78bfa, #7c3aed); }
-    .sport-btn:hover, .sport-btn.active { background: linear-gradient(90deg, #22c55e, #4ade80); }
-    .quantum-btn:hover, .quantum-btn.active { background: linear-gradient(90deg, #eab308, #facc15); }
-    .clock { position: absolute; bottom: 20px; left: 20px; right: 20px; text-align: center; font-size: 1.15em; color: #c4b5fd; background: #1a1a2e99; padding: 12px; border-radius: 14px; box-shadow: 0 0 20px #a78bfa; backdrop-filter: blur(8px); }
+    body { 
+      background: linear-gradient(135deg, #0a0a0a, #0f0f1a, #1a0033); 
+      color: #e0e0ff; 
+      font-family: 'Segoe UI', system-ui, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      display: flex; 
+      height: 100vh; 
+      overflow: hidden;
+    }
+    .sidebar { 
+      width: 280px; 
+      background: #0f0f0f; 
+      padding: 30px 20px 120px; 
+      border-right: 1px solid #222; 
+      overflow-y: auto; 
+      box-shadow: 5px 0 25px rgba(0,0,0,0.9); 
+      position: relative;
+    }
+    .sidebar h1 { 
+      color: #a78bfa; 
+      text-align: center; 
+      margin-bottom: 40px; 
+      font-size: 1.85em; 
+      text-shadow: 0 0 15px #a78bfa;
+    }
+    .topic-btn { 
+      display: block; 
+      width: 100%; 
+      padding: 17px 22px; 
+      margin: 10px 0; 
+      background: #111111; 
+      border: none; 
+      border-radius: 12px; 
+      color: #ffffff; 
+      font-size: 1.1em; 
+      cursor: pointer; 
+      text-align: left; 
+      transition: all 0.35s ease; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+    .topic-btn:hover, .topic-btn.active { 
+      background: #1a1a1a; 
+      color: #00ffea; 
+      box-shadow: 0 0 25px rgba(0, 255, 234, 0.5); 
+      transform: translateX(8px);
+    }
+    .clock { 
+      position: absolute; 
+      bottom: 25px; 
+      left: 20px; 
+      right: 20px; 
+      text-align: center; 
+      font-size: 1.12em; 
+      color: #c4b5fd; 
+      background: #1a1a1a; 
+      padding: 12px; 
+      border-radius: 12px; 
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    }
     .content-wrapper { flex: 1; display: flex; overflow: hidden; }
-    .main { flex: 3; padding: 40px; overflow-y: auto; background: #0a0a0a; }
-    .main h2 { color: #a78bfa; margin-bottom: 40px; font-size: 2.4em; text-shadow: 0 0 20px #a78bfa; }
-    .right-sidebar { flex: 1.3; padding: 40px 30px; overflow-y: auto; background: linear-gradient(to bottom, #0b0b15, #1a0033); border-left: 1px solid #2a2a4a; }
-    .right-sidebar h3 { color: #c4b5fd; margin-bottom: 25px; font-size: 1.5em; text-shadow: 0 0 10px #c4b5fd; }
-    .card { background: linear-gradient(145deg, #1e1e2e, #141422); padding: 22px; border-radius: 18px; border-left: 7px solid #a78bfa; transition: all 0.4s; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
-    .card:hover { transform: translateY(-12px); box-shadow: 0 20px 40px rgba(167,139,250,0.5); }
-    .card a { color: #c4b5fd; font-weight: 700; font-size: 1.3em; display: block; margin-bottom: 12px; text-decoration: none; }
+    .main { 
+      flex: 3; 
+      padding: 40px; 
+      overflow-y: auto; 
+      background: #0a0a0a;
+    }
+    .main h2 { 
+      color: #a78bfa; 
+      margin-bottom: 40px; 
+      font-size: 2.35em; 
+      text-shadow: 0 0 20px #a78bfa;
+    }
+    .right-sidebar { 
+      flex: 1.25; 
+      padding: 40px 30px; 
+      overflow-y: auto; 
+      background: #111111; 
+      border-left: 1px solid #222;
+    }
+    .right-sidebar h3 { 
+      color: #c4b5fd; 
+      margin-bottom: 25px; 
+      font-size: 1.55em;
+    }
+    .card { 
+      background: linear-gradient(145deg, #1e1e2e, #141422); 
+      padding: 22px; 
+      border-radius: 18px; 
+      border-left: 7px solid #a78bfa; 
+      margin-bottom: 22px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7); 
+      transition: all 0.4s;
+    }
+    .card:hover { 
+      transform: translateY(-10px); 
+      box-shadow: 0 20px 40px rgba(167,139,250,0.5);
+    }
+    .card a { 
+      color: #c4b5fd; 
+      font-weight: 700; 
+      font-size: 1.28em; 
+      display: block; 
+      margin-bottom: 10px; 
+      text-decoration: none;
+    }
     .card a:hover { color: #e0d7ff; text-decoration: underline; }
-    .meta { color: #a5b4fc; font-size: 0.95em; margin: 10px 0; display: block; }
-    .snippet { color: #d1d5ff; line-height: 1.65; font-size: 1.08em; }
-    .loading, .error { color: #c4b5fd; font-style: italic; padding: 40px; font-size: 1.2em; }
-    .error { color: #fca5a5; }
+    .meta { color: #a5b4fc; font-size: 0.95em; margin: 8px 0; }
+    .snippet { color: #d1d5ff; line-height: 1.65; }
+    .loading, .error { color: #c4b5fd; font-style: italic; padding: 40px; font-size: 1.15em; }
+    .error { color: #ff6b6b; }
   </style>
 </head>
 <body>
   <div class="sidebar">
     <h1>Acceleration Hub 🚀🤖</h1>
-    <button class="topic-btn longevity-btn active" data-topic="longevity">e/acc & Longevity</button>
-    <button class="topic-btn ai-btn" data-topic="ai">AI & Robotics</button>
-    <button class="topic-btn sport-btn" data-topic="sport">Sport (Chelsea & PL)</button>
-    <button class="topic-btn quantum-btn" data-topic="quantum">Quantum Physics</button>
+    
+    <button class="topic-btn active" data-topic="longevity">e/acc & Longevity</button>
+    <button class="topic-btn" data-topic="ai">AI & Robotics</button>
+    <button class="topic-btn" data-topic="sport">Sport (Chelsea & PL)</button>
+    <button class="topic-btn" data-topic="quantum">Quantum Physics</button>
+
     <div class="clock" id="clock">CET: --:-- | Din tid: --:--</div>
   </div>
 
   <div class="content-wrapper">
     <div class="main">
       <h2 id="current-topic">Välj ett ämne till vänster</h2>
-      <div id="news-content"><p class="loading">Laddar färska uppdateringar...</p></div>
+      <div id="news-content">
+        <p class="loading">Laddar färska uppdateringar...</p>
+      </div>
     </div>
 
     <div class="right-sidebar">
-      <h3>Live från X – vad de skriver just nu</h3>
-      <a class="twitter-timeline" href="https://twitter.com/elonmusk" data-height="520" data-theme="dark" data-chrome="noheader nofooter">Tweets by Elon Musk</a>
-      <a class="twitter-timeline" href="https://twitter.com/longevitytech" data-height="520" data-theme="dark">Tweets by LongevityTech</a>
-      <a class="twitter-timeline" href="https://twitter.com/search?q=%23eacc OR @BasedBeffJezo" data-height="520" data-theme="dark">#e/acc Live</a>
-      <a class="twitter-timeline" href="https://twitter.com/pathofexile" data-height="520" data-theme="dark">Path of Exile</a>
-      <a class="twitter-timeline" href="https://twitter.com/search?q=robotics OR humanoid OR optimus OR figure OR tesla" data-height="520" data-theme="dark">Robotics & AI</a>
+      <h3>Senaste highlights (från alla ämnen)</h3>
+      <div id="highlights">
+        <p class="loading">Samlar snabba uppdateringar...</p>
+      </div>
     </div>
   </div>
 
   <script>
     const parser = new RSSParser();
+
     const feeds = {
-      longevity: ['https://longevity.technology/feed/', 'https://www.fightaging.org/feed', 'https://www.lifespan.io/feed'],
-      ai: ['https://www.artificialintelligence-news.com/rss', 'https://techxplore.com/rss-feed/robotics-news/', 'https://robohub.org/feed/'],
+      longevity: [
+        'https://longevity.technology/feed/',
+        'https://www.fightaging.org/feed',
+        'https://www.lifespan.io/feed'
+      ],
+      ai: [
+        'https://www.artificialintelligence-news.com/rss',
+        'https://techxplore.com/rss-feed/robotics-news/',
+        'https://robohub.org/feed/'
+      ],
       sport: ['https://www.football.london/chelsea-fc/?service=rss'],
       quantum: ['https://phys.org/rss-feed/physics-news/quantum-physics/']
     };
@@ -75,6 +173,7 @@
       const diffMin = Math.floor(diffMs / 60000);
       const diffHr = Math.floor(diffMin / 60);
       const diffDay = Math.floor(diffHr / 24);
+
       if (diffDay > 0) return `för ${diffDay} dag${diffDay > 1 ? 'ar' : ''} sedan`;
       if (diffHr > 0) return `för ${diffHr} tim${diffHr > 1 ? 'mar' : ''} sedan`;
       if (diffMin > 0) return `för ${diffMin} min${diffMin > 1 ? 'uter' : ''} sedan`;
@@ -94,14 +193,20 @@
     updateClock();
 
     async function fetchWithFallback(url) {
-      const proxies = ['https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?', 'https://test.cors.workers.dev/?', 'https://codetabs.com/cors-proxy/cors-proxy.php?url=', 'https://cors.bridged.cc/'];
+      const proxies = [
+        'https://api.allorigins.win/raw?url=',
+        'https://corsproxy.io/?',
+        'https://test.cors.workers.dev/?',
+        'https://codetabs.com/cors-proxy/cors-proxy.php?url=',
+        'https://cors.bridged.cc/'
+      ];
       for (let proxy of proxies) {
         try {
           let fullUrl = proxy + encodeURIComponent(url);
           if (proxy.includes('bridged')) fullUrl = proxy + url;
           const res = await fetch(fullUrl, { signal: AbortSignal.timeout(15000) });
           if (res.ok) return res;
-        } catch {}
+        } catch (e) {}
       }
       throw new Error('Ingen proxy funkade');
     }
@@ -121,7 +226,12 @@
           const pubDate = new Date(item.pubDate).toLocaleDateString('sv-SE');
           const ago = timeAgo(item.pubDate);
           const snippet = (item.contentSnippet || item.description || '').substring(0, 220) + '...';
-          html += `<div class="card"><a href="${item.link}" target="_blank">${item.title}</a><span class="meta">Publicerad: ${pubDate} (${ago})</span><p class="snippet">${snippet}</p></div>`;
+          html += `
+            <div class="card">
+              <a href="${item.link}" target="_blank">${item.title}</a>
+              <span class="meta">Publicerad: ${pubDate} (${ago})</span>
+              <p class="snippet">${snippet}</p>
+            </div>`;
         });
         targetElement.innerHTML = html || '<p class="loading">Inga nyheter – refresh!</p>';
       } catch (e) {
@@ -147,10 +257,11 @@
 
     // Live-refresh var 5 minuter
     setInterval(() => {
-      const activeTopic = document.querySelector('.topic-btn.active').dataset.topic;
-      loadTopic(activeTopic);
+      const active = document.querySelector('.topic-btn.active').dataset.topic;
+      loadTopic(active);
     }, 300000);
 
+    // Start med Longevity
     loadTopic('longevity');
   </script>
 </body>
