@@ -6,76 +6,129 @@
   <title>Timmo's Acceleration Hub</title>
   <script src="https://unpkg.com/rss-parser@3.13.0/dist/rss-parser.min.js"></script>
   <style>
-    body { background: #0a0a0a; color: #e0e0e0; font-family: Arial, sans-serif; margin: 0; padding: 20px; line-height: 1.5; }
-    h1 { color: #00ffea; text-align: center; margin-bottom: 40px; }
-    .section { background: #1a1a1a; border-radius: 12px; padding: 20px; margin: 30px 0; box-shadow: 0 4px 15px rgba(0, 255, 234, 0.1); }
-    h2 { color: #00ffea; border-bottom: 2px solid #00ffea; padding-bottom: 10px; }
-    .card { background: #222; padding: 15px; margin: 12px 0; border-radius: 8px; border-left: 5px solid #00ffea; transition: transform 0.2s; }
-    .card:hover { transform: translateY(-3px); }
+    body { 
+      background: #0a0a0a; color: #e0e0e0; font-family: Arial, sans-serif; margin: 0; padding: 0; 
+      display: flex; height: 100vh; overflow: hidden;
+    }
+    .sidebar {
+      width: 280px; background: #111; padding: 20px; border-right: 1px solid #222; overflow-y: auto;
+    }
+    .sidebar h1 {
+      color: #00ffea; text-align: center; margin-bottom: 30px; font-size: 1.5em;
+    }
+    .topic-btn {
+      display: block; width: 100%; padding: 15px; margin: 10px 0; background: #1a1a1a; border: none;
+      border-radius: 10px; color: #e0e0e0; font-size: 1.1em; cursor: pointer; text-align: left;
+      transition: all 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .topic-btn:hover, .topic-btn.active {
+      background: #00ffea22; color: #00ffea; box-shadow: 0 0 20px rgba(0,255,234,0.4); transform: translateX(5px);
+    }
+    .main {
+      flex: 1; padding: 30px; overflow-y: auto;
+    }
+    .main h2 { color: #00ffea; margin-bottom: 20px; }
+    .card {
+      background: #222; padding: 15px; margin: 15px 0; border-radius: 10px; border-left: 5px solid #00ffea;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,255,234,0.2); }
     a { color: #00ffea; text-decoration: none; font-weight: bold; }
     a:hover { text-decoration: underline; }
-    .date { color: #aaa; font-size: 0.9em; margin-top: 5px; }
-    .loading { color: #888; font-style: italic; }
+    .date { color: #aaa; font-size: 0.9em; margin: 5px 0; }
+    .loading, .error { color: #888; font-style: italic; }
+    .error { color: #ff6b6b; }
   </style>
 </head>
 <body>
-  <h1>Timmo's Acceleration Hub 🚀🤖</h1>
-
-  <div class="section">
-    <h2>e/acc & Longevity</h2>
-    <div id="longevity-news" class="loading">Laddar senaste nyheter...</div>
+  <div class="sidebar">
+    <h1>Acceleration Hub 🚀🤖</h1>
+    <button class="topic-btn active" data-topic="all">Alla ämnen</button>
+    <button class="topic-btn" data-topic="longevity">e/acc & Longevity</button>
+    <button class="topic-btn" data-topic="ai">AI & Robotics</button>
+    <button class="topic-btn" data-topic="sport">Sport (Chelsea & PL)</button>
+    <button class="topic-btn" data-topic="quantum">Quantum Physics</button>
   </div>
 
-  <div class="section">
-    <h2>AI & Robotics</h2>
-    <div id="ai-news" class="loading">Laddar...</div>
-  </div>
-
-  <div class="section">
-    <h2>Sport (Chelsea & Premier League)</h2>
-    <div id="sport-news" class="loading">Laddar transfers & matcher...</div>
-  </div>
-
-  <div class="section">
-    <h2>Quantum Physics</h2>
-    <div id="quantum-news" class="loading">Laddar breakthroughs...</div>
+  <div class="main">
+    <h2 id="current-topic">Välj ett ämne vänster</h2>
+    <div id="news-content">
+      <p class="loading">Laddar färska nyheter... (refresh om det tar tid)</p>
+    </div>
   </div>
 
   <script>
     const parser = new RSSParser();
+    const feeds = {
+      longevity: 'https://longevity.technology/feed/',
+      ai: 'https://www.unite.ai/feed/',
+      sport: 'https://www.football.london/chelsea-fc/?service=rss',
+      quantum: 'https://phys.org/rss-feed/physics-news/quantum-physics/'
+    };
 
-    async function loadRSS(url, targetId) {
+    async function loadRSS(url, targetElement) {
       try {
-        // Ny proxy: corsproxy.io – ofta mer stabil för RSS
-        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-        const response = await fetch(proxyUrl);
+        // Primär proxy (stabilare för många feeds)
+        let proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+        let response = await fetch(proxyUrl);
+        if (!response.ok) {
+          // Fallback proxy om primär krånglar
+          proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+          response = await fetch(proxyUrl);
+        }
         if (!response.ok) throw new Error('Proxy-fel');
+
         const text = await response.text();
         const feed = await parser.parseString(text);
-        
+
         let html = '';
-        feed.items.slice(0, 6).forEach(item => {  // Upp till 6 senaste
+        feed.items.slice(0, 8).forEach(item => {  // 8 senaste för mer innehåll
           const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('sv-SE') : '';
-          const snippet = item.contentSnippet || item.description || '';
+          const snippet = (item.contentSnippet || item.description || '').substring(0, 150) + '...';
           html += `
             <div class="card">
               <a href="${item.link}" target="_blank">${item.title}</a>
               <div class="date">${date}</div>
-              <p>${snippet.substring(0, 120)}${snippet.length > 120 ? '...' : ''}</p>
+              <p>${snippet}</p>
             </div>`;
         });
-        document.getElementById(targetId).innerHTML = html || '<p>Inga nyheter just nu – prova refresh!</p>';
+        targetElement.innerHTML = html || '<p class="loading">Inga nyheter just nu – refresh!</p>';
       } catch (e) {
-        document.getElementById(targetId).innerHTML = '<p style="color: #ff6b6b;">Kunde inte ladda – prova refresh eller senare!</p>';
+        targetElement.innerHTML = '<p class="error">Kunde inte ladda (proxy-issue) – prova refresh eller senare!</p>';
       }
     }
 
-    // Uppdaterade feeds – bra och fungerande källor
-    loadRSS('https://longevity.technology/feed/', 'longevity-news');
-    loadRSS('https://www.unite.ai/feed/', 'ai-news');
-    loadRSS('https://www.football.london/chelsea-fc/?service=rss', 'sport-news');  // Chelsea-specifik från football.london
-    loadRSS('https://phys.org/rss-feed/physics-news/quantum-physics/', 'quantum-news');
+    function loadTopic(topic) {
+      const content = document.getElementById('news-content');
+      const title = document.getElementById('current-topic');
+      content.innerHTML = '<p class="loading">Laddar...</p>';
 
+      if (topic === 'all') {
+        title.textContent = 'Alla ämnen – Senaste nyheter';
+        content.innerHTML = ''; // Ladda alla i separata cards eller combined
+        Object.keys(feeds).forEach(key => {
+          const div = document.createElement('div');
+          div.innerHTML = `<h3>${key.charAt(0).toUpperCase() + key.slice(1)}</h3><div id="${key}-content">Laddar...</div>`;
+          content.appendChild(div);
+          loadRSS(feeds[key], document.getElementById(`${key}-content`));
+        });
+      } else {
+        title.textContent = topic.charAt(0).toUpperCase() + topic.slice(1);
+        loadRSS(feeds[topic], content);
+      }
+    }
+
+    // Knapparna
+    document.querySelectorAll('.topic-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadTopic(btn.dataset.topic);
+      });
+    });
+
+    // Starta med "Alla ämnen"
+    loadTopic('all');
   </script>
 </body>
 </html>
