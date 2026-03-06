@@ -32,7 +32,7 @@
   </div>
 
   <div class="section">
-    <h2>Sport (Tottenham & Premier League)</h2>
+    <h2>Sport (Chelsea & Premier League)</h2>
     <div id="sport-news" class="loading">Laddar transfers & matcher...</div>
   </div>
 
@@ -46,23 +46,22 @@
 
     async function loadRSS(url, targetId) {
       try {
-        // Använd rss2json som proxy – stabil för RSS i browser
-        const proxyUrl = 'https://rss2json.com/api.json?url=' + encodeURIComponent(url);
+        // Ny proxy: corsproxy.io – ofta mer stabil för RSS
+        const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
         const response = await fetch(proxyUrl);
         if (!response.ok) throw new Error('Proxy-fel');
-        const data = await response.json();
-        
-        if (data.status !== 'ok') throw new Error('RSS-fel');
+        const text = await response.text();
+        const feed = await parser.parseString(text);
         
         let html = '';
-        data.items.slice(0, 6).forEach(item => {  // Visa upp till 6 senaste
+        feed.items.slice(0, 6).forEach(item => {  // Upp till 6 senaste
           const date = item.pubDate ? new Date(item.pubDate).toLocaleDateString('sv-SE') : '';
-          const snippet = item.description || item.contentSnippet || '';
+          const snippet = item.contentSnippet || item.description || '';
           html += `
             <div class="card">
-              <a href="$$   {item.link}" target="_blank">   $${item.title}</a>
+              <a href="${item.link}" target="_blank">${item.title}</a>
               <div class="date">${date}</div>
-              <p>$$   {snippet.substring(0, 120)}   $${snippet.length > 120 ? '...' : ''}</p>
+              <p>${snippet.substring(0, 120)}${snippet.length > 120 ? '...' : ''}</p>
             </div>`;
         });
         document.getElementById(targetId).innerHTML = html || '<p>Inga nyheter just nu – prova refresh!</p>';
@@ -71,11 +70,11 @@
       }
     }
 
-    // Feeds – bra och uppdaterade källor 2026
-    loadRSS('https://longevity.technology/feed/', 'longevity-news');                  // Longevity.Technology
-    loadRSS('https://www.unite.ai/feed/', 'ai-news');                               // Unite AI (bra för AI/robotics)
-    loadRSS('https://www.football.london/tottenham-hotspur-fc/rss', 'sport-news');   // football.london Spurs-sektion
-    loadRSS('https://phys.org/rss-feed/physics-news/quantum-physics/', 'quantum-news'); // Phys.org Quantum
+    // Uppdaterade feeds – bra och fungerande källor
+    loadRSS('https://longevity.technology/feed/', 'longevity-news');
+    loadRSS('https://www.unite.ai/feed/', 'ai-news');
+    loadRSS('https://www.football.london/chelsea-fc/?service=rss', 'sport-news');  // Chelsea-specifik från football.london
+    loadRSS('https://phys.org/rss-feed/physics-news/quantum-physics/', 'quantum-news');
 
   </script>
 </body>
