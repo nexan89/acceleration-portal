@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<script src="https://unpkg.com/rss-parser@3.13.0/dist/rss-parser.min.js"></script>
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
@@ -25,7 +26,29 @@
     <h2>AI & Robotics</h2>
     <div id="ai-news">Laddar...</div>
   </div>
+  <script>
+  const parser = new RSSParser();
   
+  async function loadRSS(url, targetId) {
+    try {
+      const feed = await parser.parseURL('https://api.allorigins.win/raw?url=' + encodeURIComponent(url));
+      let html = '';
+      feed.items.slice(0, 5).forEach(item => {  // Visa 5 senaste
+        html += `<div class="card">
+          <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
+          <p>${item.pubDate || ''} - ${item.contentSnippet?.substring(0, 150) || ''}...</p>
+        </div>`;
+      });
+      document.getElementById(targetId).innerHTML = html || 'Inga nyheter just nu.';
+    } catch (e) {
+      document.getElementById(targetId).innerHTML = 'Fel vid laddning – prova refresh!';
+    }
+  }
+  
+  // Exempel-feeds – byt till dina!
+  loadRSS('https://longevity.technology/feed/', 'longevity-news');
+  // loadRSS('annan-rss-url-här', 'ai-news');  // Lägg till fler
+</script>
   <!-- Lägg till fler sektioner här senare, t.ex. Sport, Quantum -->
 </body>
 </html>
